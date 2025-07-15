@@ -1,0 +1,33 @@
+name: Heartbeat Commit (Keep Green)
+
+on:
+  # push:
+  #   branches:
+  #     - main  # 触发条件，推送到 main 分支时
+  schedule:
+    - cron: '0 * * * *'  # 每小时的第0分钟触发心跳提交
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    # if: github.event_name == 'schedule'  # 仅在定时触发时执行 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 # 推荐使用最新版本
+
+      - name: Configure Git User
+        run: |
+          git config --local user.email "1919892171@qq.com" 
+          git config --local user.name "shangxueink"      
+
+      - name: Create Empty Commit
+        run: |
+          # 确保仓库是最新的，避免冲突
+          git pull --rebase origin main 
+          
+          git commit --allow-empty -m "🟢 Keep the green streak alive!"
+          
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
